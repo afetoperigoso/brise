@@ -21,8 +21,7 @@ ShellRoot {
                 if (!t.fullscreen || !t.screens.some(s => s.name === desktop.modelData.name)) return false;
                 if (t.activated) return true;
                 return Niri.windows.values.some(w => w.appId === t.appId && w.title === t.title
-                    && w.output === desktop.modelData.name
-                    && Niri.workspaces.values.some(ws => ws.id === w.workspaceId && ws.active));
+                    && w.output === desktop.modelData.name && w.focused);
             })
             PanelWindow {
                 id: barWindow
@@ -50,11 +49,11 @@ ShellRoot {
                 BackgroundEffect.blurRegion: Theme.blurEnabled ? barBlurRegion : null
                 Region {
                     id: barBlurRegion
-                    x: DesktopState.minimalBar ? Math.round(bar.compactItem.x) + 1 : 0
-                    y: Math.round((DesktopState.minimalBar ? bar.compactItem.y + 1 : 0) + barWindow.barOffset)
-                    width: DesktopState.minimalBar ? Math.max(0, Math.round(bar.compactItem.width) - 2) : Math.round(bar.width)
-                    height: DesktopState.minimalBar ? bar.compactItem.height - 2 : Math.round(bar.height)
-                    radius: DesktopState.minimalBar ? 14 : 0
+                    x: DesktopState.minimalBar ? Math.round(bar.compactItem.x) : 0
+                    y: Math.round((DesktopState.minimalBar ? bar.compactItem.y : 0) + barWindow.barOffset)
+                    width: DesktopState.minimalBar ? Math.round(bar.compactItem.width) : Math.round(bar.width)
+                    height: DesktopState.minimalBar ? bar.compactItem.height : Math.round(bar.height)
+                    radius: DesktopState.minimalBar ? 15 : 0
                     topLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
                     topRightCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
                     bottomLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
