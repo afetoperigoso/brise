@@ -50,11 +50,11 @@ ShellRoot {
                 BackgroundEffect.blurRegion: Theme.blurEnabled ? barBlurRegion : null
                 Region {
                     id: barBlurRegion
-                    x: DesktopState.minimalBar ? Math.round(bar.compactItem.x) : 0
-                    y: Math.round((DesktopState.minimalBar ? bar.compactItem.y : 0) + barWindow.barOffset)
-                    width: DesktopState.minimalBar ? Math.round(bar.compactItem.width) : Math.round(bar.width)
-                    height: DesktopState.minimalBar ? bar.compactItem.height : Math.round(bar.height)
-                    radius: DesktopState.minimalBar ? 15 : 0
+                    x: DesktopState.minimalBar ? Math.round(bar.compactItem.x) + 1 : 0
+                    y: Math.round((DesktopState.minimalBar ? bar.compactItem.y + 1 : 0) + barWindow.barOffset)
+                    width: DesktopState.minimalBar ? Math.max(0, Math.round(bar.compactItem.width) - 2) : Math.round(bar.width)
+                    height: DesktopState.minimalBar ? bar.compactItem.height - 2 : Math.round(bar.height)
+                    radius: DesktopState.minimalBar ? 14 : 0
                     topLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
                     topRightCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
                     bottomLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
@@ -80,6 +80,24 @@ ShellRoot {
                     anchors.fill: parent; source: DesktopState.wallpaper ? "file://" + DesktopState.wallpaper : ""; fillMode: Image.PreserveAspectCrop; asynchronous: true
                     opacity: status === Image.Ready ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 450 } }
+                }
+            }
+            LazyLoader {
+                active: DesktopState.osdVisible && DesktopState.osdOutput === desktop.modelData.name
+                PanelWindow {
+                    screen: desktop.modelData
+                    anchors.bottom: true
+                    margins.bottom: 72
+                    implicitWidth: 172; implicitHeight: 46
+                    color: "transparent"
+                    exclusionMode: ExclusionMode.Ignore
+                    mask: Region {}
+                    WlrLayershell.layer: WlrLayer.Overlay
+                    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+                    WlrLayershell.namespace: "brise-audio-osd"
+                    BackgroundEffect.blurRegion: Theme.blurEnabled ? osdBlur : null
+                    Region { id: osdBlur; width: 172; height: 46; radius: Theme.radius }
+                    AudioOsd { anchors.fill: parent }
                 }
             }
             LazyLoader {

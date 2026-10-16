@@ -99,6 +99,7 @@ Rectangle {
         radius: Theme.squareEdges ? 0 : 15
         color: Theme.squareEdges ? "transparent" : Theme.compactBar
         Shape {
+            preferredRendererType: Shape.CurveRenderer
             anchors.fill: parent
             visible: Theme.squareEdges
             antialiasing: true

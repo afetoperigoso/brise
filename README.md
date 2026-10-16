@@ -6,7 +6,7 @@ A desktop shell for Niri built with Quickshell, featuring full-width and minimal
 
 - Quickshell with the Niri, PipeWire, MPRIS, Bluetooth, SystemTray, and BackgroundEffect modules. The installed package must be compatible with your system's Qt version.
 - Python 3, dbus-python, and PyGObject.
-- PipeWire/WirePlumber (`wpctl`), BlueZ, and wl-clipboard (`wl-copy`, `wl-paste`).
+- PipeWire/WirePlumber (`wpctl`), PulseAudio-compatible tools (`pactl`, usually provided by `libpulse`), BlueZ, and wl-clipboard (`wl-copy`, `wl-paste`).
 - Noto Sans for afeto. Tamzen8x16b is bundled with genesis in `themes/genesis/fonts/`, along with its license, and loads directly from the theme. Tabler icons and their license are in `fonts/`.
 - Background blur in afeto requires compositor support.
 
@@ -26,6 +26,16 @@ This installs a launcher at `~/.local/bin/brise` pointing to the project. Add `~
 ~/.local/bin/brise stop
 ~/.local/bin/brise restart
 ```
+
+## Restart Brise
+
+To restart the shell in the background while keeping your selected theme and preferences:
+
+```bash
+brise restart
+```
+
+If `brise` is not in your PATH, use `~/.local/bin/brise restart`. Theme changes normally reload automatically; use this command when a full restart is needed.
 
 ## Themes
 
@@ -70,11 +80,11 @@ Replace existing shortcuts using the same keys rather than adding duplicates. Th
 - **Clock:** left-click to open the calendar and Spotify panel; right-click to switch between full-width and minimal bars. Your preference is saved.
 - **Music:** Spotify only. The minimal bar shows the track and artist with scrolling text. The full-width bar shows circular album art that spins during playback and stops when paused.
 - **System tray:** right-click the bar anywhere except the clock to show application icons. Left-click an icon to activate the application; right-click to open its menu. The settings button lets you choose which currently registered applications appear in the full-width bar.
-- **Audio:** input and output cards, device selection, and per-app volume and mute controls. The input prefers the Starship/Matisse analog device when available; you can select and save another input.
+- **Audio:** input and output cards, device selection, and per-app volume and mute controls. A themed on-screen indicator appears when the system default microphone or output is muted or unmuted, including changes made by external shortcuts. The input prefers the Starship/Matisse analog device when available; you can select and save another input.
 - **Bluetooth:** scan for up to 20 seconds, connect, disconnect, unpair paired devices, and pair using a PIN or confirmation. Keep the panel open while pairing.
 - **Wallpapers:** centered panel with thumbnails and automatic refresh. By default, searches `~/Imagens` and conventional wallpaper directories. Change the directory in the palette. The selected image is applied to all monitors.
 - **Clipboard:** text and images copied while Brise is running, with search and keyboard navigation. Use the arrow keys and Enter, or click an item, to copy it. Paste normally with Ctrl+V. Stores up to 80 items, with a 10 MiB limit per item. Does not import history from other shells.
-- **Power:** restart, shut down, or suspend. Click the same icon again to confirm.
+- **Power:** restart, shut down, or suspend. Click an icon once to execute the action.
 - **Panels:** press Esc or click outside to close.
 
 ## Development

@@ -9,7 +9,7 @@ ColumnLayout {
         placeholderText: "Buscar no clipboard"; color: Theme.text; placeholderTextColor: Theme.muted
         font.family: Theme.font; font.pixelSize: Theme.textScale * 12
         leftPadding: 12; rightPadding: 12; selectByMouse: true
-        background: Rectangle { radius: Theme.squareEdges ? 0 : 10; color: Theme.surface }
+        background: Rectangle { antialiasing: true; radius: Theme.squareEdges ? 0 : 10; color: Theme.surface }
         Component.onCompleted: forceActiveFocus()
         onTextChanged: clips.currentIndex = 0
         Keys.onDownPressed: clips.currentIndex = Math.min(clips.count - 1, clips.currentIndex + 1)
@@ -28,7 +28,7 @@ ColumnLayout {
             required property var modelData
             required property int index
             width: clips.width; height: modelData.image ? 100 : 64
-            radius: Theme.squareEdges ? 0 : 10; color: index === clips.currentIndex ? Theme.surface : "#28000000"
+            antialiasing: true; radius: Theme.squareEdges ? 0 : 10; color: index === clips.currentIndex ? Theme.surface : "#28000000"
             RowLayout {
                 anchors.fill: parent; anchors.margins: 12; spacing: 12
                 Image { visible: clip.modelData.image !== ""; source: clip.modelData.image ? "file://" + clip.modelData.image : ""; Layout.preferredWidth: 100; Layout.fillHeight: true; sourceSize: Qt.size(200, 150); fillMode: Image.PreserveAspectFit; asynchronous: true }

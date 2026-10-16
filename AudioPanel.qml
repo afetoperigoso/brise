@@ -11,7 +11,7 @@ ColumnLayout {
     }
     Rectangle {
         Layout.fillWidth: true; Layout.fillHeight: true
-        radius: Theme.squareEdges ? 0 : 14; color: Theme.surface
+        antialiasing: true; radius: Theme.squareEdges ? 0 : 14; color: Theme.surface
         ColumnLayout {
             anchors.fill: parent; anchors.margins: 14; spacing: 10
             BLabel { text: "Volume de aplicativos"; font.pixelSize: Theme.textScale * 14; font.weight: Font.DemiBold }
@@ -48,7 +48,7 @@ ColumnLayout {
                                 return "";
                             }
                             Layout.fillWidth: true; Layout.preferredHeight: 68
-                            radius: Theme.squareEdges ? 0 : 10; color: "#60000000"
+                            antialiasing: true; radius: Theme.squareEdges ? 0 : 10; color: "#60000000"
                             RowLayout {
                                 anchors.fill: parent; anchors.margins: 10; spacing: 10
                                 Item {

@@ -3,6 +3,7 @@ import QtQuick
 import QtCore
 import Quickshell
 import Quickshell.Io
+import Quickshell.Niri
 import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
 import Quickshell.Bluetooth
@@ -124,7 +125,113 @@ QtObject {
     }
     property bool preview: Quickshell.env("BRISE_PREVIEW") === "1"
     property var sink: Pipewire.defaultAudioSink
-    property var inputs: Pipewire.nodes.values.filter(n => !n.isSink && n.audio && !n.isStream)
+    property var pulseSources: []
+    property string pulseDefaultSource: ""
+    property var sourceDiscovery: Process {
+        command: ["python3", Quickshell.shellPath("audio-sources.py")]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const data = JSON.parse(text);
+                    const previous = root.pulseSources.find(n => n.name === root.pulseDefaultSource);
+                    const next = data.sources.find(n => n.name === data.default);
+                    const changed = JSON.stringify(root.pulseSources) !== JSON.stringify(data.sources);
+                    if (changed) root.pulseSources = data.sources;
+                    root.pulseDefaultSource = data.default;
+                    if (previous && next && previous.name === next.name && previous.audio.muted !== next.audio.muted
+                        && (!Pipewire.defaultAudioSource || !Pipewire.defaultAudioSource.audio)) root.showAudioOsd("input", next);
+                } catch (e) {}
+            }
+        }
+    }
+    property var sourceDiscoveryTimer: Timer {
+        interval: 1000; repeat: true; triggeredOnStart: true; running: !root.preview
+        onTriggered: { if (!root.sourceDiscovery.running) root.sourceDiscovery.running = true; }
+    }
+    property var pendingSourceAction: null
+    property var sourceCommand: Process {
+        onExited: {
+            if (root.pendingSourceAction) {
+                const args = root.pendingSourceAction;
+                root.pendingSourceAction = null;
+                root.sourceAction(args);
+            } else if (!root.sourceDiscovery.running) root.sourceDiscovery.running = true;
+        }
+    }
+    function sourceAction(args) {
+        if (preview) return;
+        // Preserve o último ajuste quando o slider emitir valores rapidamente.
+        if (sourceCommand.running) { pendingSourceAction = args; return; }
+        sourceCommand.command = ["pactl"].concat(args);
+        sourceCommand.running = true;
+    }
+    function setInputVolume(node, value) {
+        if (!node || !node.audio) return;
+        if (node.pulseSource) sourceAction(["set-source-volume", node.name, Math.round(value * 100) + "%"]);
+        else node.audio.volume = value;
+    }
+    function toggleInputMute(node) {
+        if (!node || !node.audio) return;
+        if (node.pulseSource) sourceAction(["set-source-mute", node.name, "toggle"]);
+        else node.audio.muted = !node.audio.muted;
+    }
+    property var systemInput: Pipewire.defaultAudioSource || pulseSources.find(n => n.name === pulseDefaultSource) || null
+    property bool inputOsdArmed: false
+    property bool outputOsdArmed: false
+    property bool osdVisible: false
+    property string osdKind: "input"
+    property var osdNode: null
+    property string osdOutput: ""
+    onSystemInputChanged: { inputOsdArmed = false; inputOsdArm.restart(); }
+    onSinkChanged: { outputOsdArmed = false; outputOsdArm.restart(); }
+    property var inputOsdArm: Timer {
+        interval: 350
+        onTriggered: root.inputOsdArmed = !!(root.systemInput && root.systemInput.ready)
+    }
+    property var outputOsdArm: Timer {
+        interval: 350
+        onTriggered: root.outputOsdArmed = !!(root.sink && root.sink.ready)
+    }
+    property var inputReadyWatch: Connections {
+        target: root.systemInput && !root.systemInput.pulseSource ? root.systemInput : null
+        function onReadyChanged() { root.inputOsdArmed = false; if (root.systemInput.ready) root.inputOsdArm.restart(); }
+    }
+    property var outputReadyWatch: Connections {
+        target: root.sink
+        function onReadyChanged() { root.outputOsdArmed = false; if (root.sink.ready) root.outputOsdArm.restart(); }
+    }
+    property var inputMuteWatch: Connections {
+        target: root.systemInput && !root.systemInput.pulseSource ? root.systemInput.audio : null
+        function onMutedChanged() { if (root.inputOsdArmed) root.showAudioOsd("input", root.systemInput); }
+    }
+    property var outputMuteWatch: Connections {
+        target: root.sink ? root.sink.audio : null
+        function onMutedChanged() { if (root.outputOsdArmed) root.showAudioOsd("output", root.sink); }
+    }
+    property var osdTimeout: Timer { interval: 1600; onTriggered: root.osdVisible = false }
+    function showAudioOsd(kind, node) {
+        if (preview) return;
+        osdKind = kind;
+        osdNode = node;
+        osdOutput = Niri.focusedWindow && Niri.focusedWindow.output ? Niri.focusedWindow.output : Quickshell.screens.length ? Quickshell.screens[0].name : "";
+        osdVisible = true;
+        osdTimeout.restart();
+    }
+    property var inputs: {
+        const nodes = Pipewire.nodes.values.filter(n => {
+            if (!n.audio || n.isStream) return false;
+            const mediaClass = (n.properties || {})["media.class"] || "";
+            return n.type === PwNodeType.AudioSource || n.type === PwNodeType.AudioDuplex
+                || mediaClass.startsWith("Audio/Source") || mediaClass === "Audio/Duplex"
+                || !n.isSink;
+        });
+        const defaultSource = Pipewire.defaultAudioSource;
+        if (defaultSource && defaultSource.audio && !nodes.some(n => n.id === defaultSource.id)) nodes.push(defaultSource);
+        for (const pulse of pulseSources) {
+            if (!nodes.some(n => n.name === pulse.name)) nodes.push(pulse);
+        }
+        return nodes;
+    }
     property var source: inputs.find(n => n.name === preferences.inputName)
         || inputs.find(n => /starship|matisse/i.test(n.description + " " + n.name) && /analog|analógico/i.test(n.description + " " + n.name))
         || Pipewire.defaultAudioSource
@@ -138,14 +245,15 @@ QtObject {
     })
     function selectInput(node) {
         preferences.inputName = node.name;
-        if (!preview) Quickshell.execDetached(["wpctl", "set-default", node.id.toString()]);
+        if (node.pulseSource) sourceAction(["set-default-source", node.name]);
+        else if (!preview) Quickshell.execDetached(["wpctl", "set-default", node.id.toString()]);
     }
     property var adapter: Bluetooth.defaultAdapter
     property var players: Mpris.players.values.filter(p => /^org\.mpris\.MediaPlayer2\.spotify(?:[.-].*)?$/.test(p.dbusName))
     property var player: players.length ? (players.find(p => p.isPlaying) || players[0]) : null
     property var wallpapers: []
     property var outputs: Pipewire.nodes.values.filter(n => n.isSink && n.audio && !n.isStream)
-    property var tracker: PwObjectTracker { objects: [root.sink, root.source].concat(root.outputs, root.inputs, root.streamNodes).filter(n => n != null) }
+    property var tracker: PwObjectTracker { objects: [root.sink, root.source, root.systemInput].concat(root.outputs, root.inputs, root.streamNodes).filter(n => n != null && !n.pulseSource) }
     function toggle(name, screen) {
         panel = panel === name && output === screen ? "" : name;
         output = screen;

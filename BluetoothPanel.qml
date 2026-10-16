@@ -26,7 +26,7 @@ ColumnLayout {
                 Rectangle {
                     id: device
                     required property var modelData
-                    Layout.fillWidth: true; Layout.preferredHeight: modelData.paired ? 86 : 58; Layout.maximumHeight: Layout.preferredHeight; implicitHeight: Layout.preferredHeight; radius: Theme.squareEdges ? 0 : 10; color: Theme.surface
+                    Layout.fillWidth: true; Layout.preferredHeight: modelData.paired ? 86 : 58; Layout.maximumHeight: Layout.preferredHeight; implicitHeight: Layout.preferredHeight; antialiasing: true; radius: Theme.squareEdges ? 0 : 10; color: Theme.surface
                     Connections {
                         target: device.modelData
                         function onPairedChanged() {
@@ -72,7 +72,7 @@ ColumnLayout {
         TextField {
             id: pin; visible: ["pin", "passkey"].includes(DesktopState.pairing.kind)
             Layout.fillWidth: true; color: Theme.text; placeholderText: "PIN"; selectByMouse: true
-            background: Rectangle { color: Theme.surface; radius: Theme.squareEdges ? 0 : 8; border.color: Theme.line; border.width: 1 }
+            background: Rectangle { color: Theme.surface; antialiasing: true; radius: Theme.squareEdges ? 0 : 8; border.color: Theme.line; border.width: 1 }
         }
         RowLayout {
             visible: DesktopState.pairing.kind !== "display"

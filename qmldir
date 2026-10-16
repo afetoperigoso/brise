@@ -24,3 +24,5 @@ ClipboardPanel 1.0 ClipboardPanel.qml
 HoverShade 1.0 HoverShade.qml
 
 TraySettings 1.0 TraySettings.qml
+
+AudioOsd 1.0 AudioOsd.qml

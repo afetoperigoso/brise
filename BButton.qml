@@ -14,7 +14,7 @@ Rectangle {
     signal scrolled(real steps)
     implicitWidth: text ? Math.max(36, label.implicitWidth + (icon ? 48 : 24)) : 36
     implicitHeight: 36
-    radius: Theme.squareEdges ? 0 : 10
+    antialiasing: true; radius: Theme.squareEdges ? 0 : 10
     color: selected ? Theme.surface : subtle ? "transparent" : Theme.surface
     opacity: enabled ? 1 : 0.4
     Behavior on color { ColorAnimation { duration: Theme.duration } }
