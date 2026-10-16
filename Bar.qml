@@ -174,6 +174,7 @@ Rectangle {
                         onImplicitWidthChanged: Qt.callLater(resetScroll)
                         SequentialAnimation {
                             id: titleScroll
+                            paused: !DesktopState.player || !DesktopState.player.isPlaying
                             loops: Animation.Infinite
                             PauseAnimation { duration: 1400 }
                             NumberAnimation { target: songTitle; property: "x"; from: 0; to: Math.min(0, titleViewport.width - songTitle.width); duration: Math.max(1000, (songTitle.width - titleViewport.width) * 35); easing.type: Easing.Linear }
