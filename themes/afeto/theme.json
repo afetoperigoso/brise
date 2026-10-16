@@ -1,0 +1,7 @@
+{
+  "name": "afeto",
+  "default": true,
+  "project": "brise",
+  "description": "Tema principal: visual atual, transparência com blur, destaques neutros e hover com escala suave.",
+  "palette": "Palette.qml"
+}

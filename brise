@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+brise_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if [[ ! -f "$brise_dir/Theme.qml" ]]; then
+  python3 "$brise_dir/themes.py" afeto >/dev/null
+fi
+case "${1:-start}" in
+  wallpaper-current) exec python3 "$brise_dir/wallpapers.py" current ;;
+  theme) exec python3 "$brise_dir/themes.py" "${2:-current}" ;;
+  start) exec qs -p "$brise_dir/shell.qml" ;;
+  stop) exec qs kill -p "$brise_dir/shell.qml" ;;
+  clipboard|dashboard|wallpapers|audio|bluetooth|power|tray|tray-settings) exec qs ipc -p "$brise_dir/shell.qml" call brise toggle "$1" ;;
+  close) exec qs ipc -p "$brise_dir/shell.qml" call brise close ;;
+  preview) export BRISE_PREVIEW=1; exec qs -p "$brise_dir/preview.qml" ;;
+  *) printf 'Uso: %s [theme [list|afeto|genesis]|start|stop|clipboard|dashboard|wallpapers|audio|bluetooth|power|close|preview]\n' "$0"; exit 2 ;;
+esac
