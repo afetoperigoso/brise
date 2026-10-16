@@ -1,8 +1,6 @@
 {
   "name": "genesis",
   "default": false,
-  "extends": "afeto",
   "project": "brise",
-  "description": "Tema derivado de afeto, inicialmente com o mesmo visual.",
   "palette": "Palette.qml"
 }

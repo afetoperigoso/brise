@@ -34,7 +34,6 @@ Rectangle {
         anchors.rightMargin: root.section === "tray" && Theme.squareEdges ? 14 : anchors.margins
         sourceComponent: root.section === "tray-settings" ? traySettings : root.section === "clipboard" ? clipboard : root.section === "tray" ? tray : root.section === "dashboard" ? dashboard : root.section === "wallpapers" ? wallpapers : root.section === "audio" ? audio : root.section === "bluetooth" ? bluetooth : power
     }
-    component Separator: Rectangle { color: Theme.line; height: 1 }
     Component { id: traySettings; TraySettings {} }
     Component { id: clipboard; ClipboardPanel {} }
     Component { id: tray; TrayPanel {} }

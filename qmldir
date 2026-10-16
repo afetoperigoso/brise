@@ -14,15 +14,8 @@ WallpaperCard 1.0 WallpaperCard.qml
 CalendarCard 1.0 CalendarCard.qml
 Level 1.0 Level.qml
 AudioPanel 1.0 AudioPanel.qml
-
 AudioDevice 1.0 AudioDevice.qml
-
 TrayPanel 1.0 TrayPanel.qml
-
 ClipboardPanel 1.0 ClipboardPanel.qml
-
-HoverShade 1.0 HoverShade.qml
-
 TraySettings 1.0 TraySettings.qml
-
 AudioOsd 1.0 AudioOsd.qml

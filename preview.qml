@@ -13,7 +13,6 @@ ShellRoot {
             Image { anchors.fill: parent; source: DesktopState.wallpapers.length ? "file://" + DesktopState.wallpapers[0] : ""; fillMode: Image.PreserveAspectCrop; opacity: 0.5 }
             Bar { width: parent.width; clockText: "14:44" }
             PanelContent { section: Quickshell.env("BRISE_SECTION") || "dashboard"; anchors.horizontalCenter: parent.horizontalCenter; y: 48 }
-            BLabel { anchors.horizontalCenter: parent.horizontalCenter; y: 474; text: "BRISE  /  prévia de composição"; font.pixelSize: 10; font.letterSpacing: 2; color: Theme.muted }
         }
         Timer {
             interval: 1800; running: true

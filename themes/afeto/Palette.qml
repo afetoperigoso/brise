@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 QtObject {
     readonly property string name: "afeto"
-    // Edite estes valores; o Quickshell recarrega a interface automaticamente.
     property color panel: "#70191c27"
     property color surface: "#50252936"
     property color hover: "#20ffffff"

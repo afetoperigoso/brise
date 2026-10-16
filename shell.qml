@@ -128,7 +128,6 @@ ShellRoot {
                             height: Math.min(implicitHeight, parent.height - Theme.barHeight - 24)
                             x: section === "tray-settings" || section === "clipboard" || section === "tray" || section === "dashboard" || section === "wallpapers" || section === "power" || ((section === "audio" || section === "bluetooth") && DesktopState.minimalBar) ? (parent.width - width) / 2 : parent.width - width - 12
                             y: section === "wallpapers" || section === "clipboard" ? (parent.height - height) / 2 : Theme.barHeight + 10
-                            // Keep content above the click shield.
                             Component.onCompleted: { opacity = 1; scale = 1; }
                             opacity: 0; scale: 0.97; transformOrigin: section === "wallpapers" ? Item.Center : Item.Top
                             Behavior on opacity { NumberAnimation { duration: Theme.duration } }

@@ -1,8 +1,8 @@
-# Preferências locais e tema selecionado (gerado pelo comando brise)
+# Local preferences and generated theme selection
 /Theme.qml
 /Theme.qml.tmp
 /preferences.ini
-# Capturas, caches e snapshots pessoais
+# Screenshots, caches and local archives
 /preview*.png
 **/__pycache__/
 *.pyc

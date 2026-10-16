@@ -1,15 +1,13 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell
 RowLayout {
-    id: root
     spacing: 8
     Repeater {
         model: [
-            {icon: "refresh", command: "reboot", label: "Reiniciar"},
-            {icon: "power", command: "poweroff", label: "Desligar"},
-            {icon: "moon", command: "suspend", label: "Suspender"}
+            {icon: "refresh", command: "reboot"},
+            {icon: "power", command: "poweroff"},
+            {icon: "moon", command: "suspend"}
         ]
         Rectangle {
             required property var modelData

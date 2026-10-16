@@ -25,8 +25,7 @@ if command == 'capture':
     available = types.stdout.decode(errors='replace').splitlines()
     mime = next((m for m in ('image/png', 'image/jpeg', 'image/webp', 'text/plain;charset=utf-8', 'text/plain') if m in available), None)
     if mime is None: sys.exit(0)
-    # --watch entrega os bytes ao stdin, preservando o tipo anunciado.
-    # Leia explicitamente o tipo escolhido para formatos múltiplos.
+    # Read the selected MIME type explicitly when multiple formats are available.
     proc = subprocess.run(['wl-paste', '--no-newline', '--type', mime], capture_output=True, timeout=5)
     body = proc.stdout
     if proc.returncode or not body or len(body) > 10 * 1024 * 1024: sys.exit(0)
