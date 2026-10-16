@@ -7,6 +7,7 @@ import Quickshell.Niri
 Rectangle {
     id: root
     property string output: ""
+    property size wallpaperSize: Qt.size(1920, 1080)
     property string clockText: "00:00"
     property string currentSong: {
         const player = DesktopState.player;
@@ -98,6 +99,36 @@ Rectangle {
         width: Math.min(parent.width, root.compactWidth); height: 30
         radius: Theme.squareEdges ? 0 : 15
         color: Theme.squareEdges ? "transparent" : Theme.compactBar
+        Rectangle {
+            id: glassMask
+            anchors.fill: parent
+            radius: 15; color: "white"; antialiasing: true
+            layer.enabled: true
+            layer.textureSize: Qt.size(Math.ceil(width * 4), Math.ceil(height * 4))
+            layer.smooth: true
+            visible: false
+        }
+        Item {
+            anchors.fill: parent
+            visible: Theme.blurEnabled && DesktopState.wallpaper !== ""
+            clip: true
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                autoPaddingEnabled: false
+                blurEnabled: true; blurMax: 32; blur: 1
+                maskEnabled: true; maskSource: glassMask
+                maskThresholdMin: 0.5; maskSpreadAtMin: 0.65
+                maskThresholdMax: 1; maskSpreadAtMax: 0
+            }
+            Image {
+                width: root.wallpaperSize.width; height: root.wallpaperSize.height
+                x: -(width - capsule.width) / 2; y: -8
+                source: DesktopState.wallpaper ? "file://" + DesktopState.wallpaper : ""
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+            }
+            Rectangle { anchors.fill: parent; color: Theme.compactBar }
+        }
         Shape {
             preferredRendererType: Shape.CurveRenderer
             anchors.fill: parent

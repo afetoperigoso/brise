@@ -46,21 +46,18 @@ ShellRoot {
                 WlrLayershell.layer: WlrLayer.Overlay
                 // Fullscreen já ocupa o monitor; não redimensione a área útil durante a animação.
                 exclusiveZone: Theme.barHeight + (DesktopState.minimalBar ? 6 : 0)
-                BackgroundEffect.blurRegion: Theme.blurEnabled ? barBlurRegion : null
+                BackgroundEffect.blurRegion: Theme.blurEnabled && !DesktopState.minimalBar ? barBlurRegion : null
                 Region {
                     id: barBlurRegion
                     x: DesktopState.minimalBar ? Math.round(bar.compactItem.x) : 0
                     y: Math.round((DesktopState.minimalBar ? bar.compactItem.y : 0) + barWindow.barOffset)
-                    width: DesktopState.minimalBar ? Math.round(bar.compactItem.width) : Math.round(bar.width)
-                    height: DesktopState.minimalBar ? bar.compactItem.height : Math.round(bar.height)
+                    width: DesktopState.minimalBar ? Math.round(bar.compactItem.width) : bar.width
+                    height: DesktopState.minimalBar ? bar.compactItem.height : bar.height
                     radius: DesktopState.minimalBar ? 15 : 0
-                    topLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
-                    topRightCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
-                    bottomLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
-                    bottomRightCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
                 }
                 Bar {
                     id: bar; anchors.fill: parent
+                    wallpaperSize: Qt.size(desktop.modelData.width, desktop.modelData.height)
                     output: desktop.modelData.name; clockText: Qt.formatDateTime(clock.date, "HH:mm")
                     transform: Translate {
                         y: barWindow.barOffset
