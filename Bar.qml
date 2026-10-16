@@ -23,7 +23,6 @@ Rectangle {
     property real compactWidth: Theme.compactPadding + 52 + mediaWidth + 60
     color: DesktopState.minimalBar ? "transparent" : Theme.bar
     implicitHeight: Theme.barHeight
-    layer.enabled: DesktopState.minimalBar
     clip: true
     Item {
         anchors.fill: parent
@@ -92,7 +91,9 @@ Rectangle {
     }
     Rectangle {
         id: capsule
-        anchors.centerIn: parent
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        antialiasing: true
         visible: DesktopState.minimalBar
         width: Math.min(parent.width, root.compactWidth); height: 30
         radius: Theme.squareEdges ? 0 : 15

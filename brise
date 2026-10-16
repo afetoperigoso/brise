@@ -9,8 +9,13 @@ case "${1:-start}" in
   theme) exec python3 "$brise_dir/themes.py" "${2:-current}" ;;
   start) exec qs -p "$brise_dir/shell.qml" ;;
   stop) exec qs kill -p "$brise_dir/shell.qml" ;;
+  restart)
+    qs kill -p "$brise_dir/shell.qml" 2>/dev/null || true
+    sleep 0.2
+    exec qs -d -p "$brise_dir/shell.qml"
+    ;;
   clipboard|dashboard|wallpapers|audio|bluetooth|power|tray|tray-settings) exec qs ipc -p "$brise_dir/shell.qml" call brise toggle "$1" ;;
   close) exec qs ipc -p "$brise_dir/shell.qml" call brise close ;;
   preview) export BRISE_PREVIEW=1; exec qs -p "$brise_dir/preview.qml" ;;
-  *) printf 'Uso: %s [theme [list|afeto|genesis]|start|stop|clipboard|dashboard|wallpapers|audio|bluetooth|power|close|preview]\n' "$0"; exit 2 ;;
+  *) printf 'Uso: %s [theme [list|afeto|genesis]|start|stop|restart|clipboard|dashboard|wallpapers|audio|bluetooth|power|close|preview]\n' "$0"; exit 2 ;;
 esac

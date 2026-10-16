@@ -24,6 +24,7 @@ Isso instala um lançador em `~/.local/bin/brise` apontando para o projeto. Adic
 ```bash
 ~/.local/bin/brise start
 ~/.local/bin/brise stop
+~/.local/bin/brise restart
 ```
 
 ## Temas

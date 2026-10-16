@@ -27,29 +27,44 @@ ShellRoot {
             PanelWindow {
                 id: barWindow
                 property real reveal: desktop.fullscreen ? 0 : 1
-                Behavior on reveal { NumberAnimation { duration: 320; easing.type: desktop.fullscreen ? Easing.InCubic : Easing.OutCubic } }
-                visible: reveal > 0
+                readonly property real barOffset: -(Theme.barHeight + (DesktopState.minimalBar ? 6 : 0) + 2) * (1 - reveal)
+                Behavior on reveal {
+                    NumberAnimation {
+                        duration: !DesktopState.minimalBar && !desktop.fullscreen ? 80 : 320
+                        easing.type: desktop.fullscreen ? Easing.InCubic : Easing.OutCubic
+                    }
+                }
+                // Preserve a superfície Wayland para não recriar o blur ao sair do fullscreen.
+                visible: true
                 screen: desktop.modelData
                 anchors { top: true; left: !DesktopState.minimalBar; right: !DesktopState.minimalBar }
                 margins.top: DesktopState.minimalBar ? 6 : 0
                 implicitWidth: Math.min(Theme.compactPadding + 52 + 106 + 60, desktop.modelData.width)
-                mask: Region { width: barWindow.width; height: barWindow.height }
+                mask: Region { width: barWindow.width; height: barWindow.reveal > 0 ? barWindow.height : 0 }
                 implicitHeight: Theme.barHeight
                 color: "transparent"
                 WlrLayershell.namespace: "brise-bar"
                 WlrLayershell.layer: WlrLayer.Overlay
-                exclusiveZone: desktop.fullscreen ? 0 : Theme.barHeight + (DesktopState.minimalBar ? 6 : 0)
+                // Fullscreen já ocupa o monitor; não redimensione a área útil durante a animação.
+                exclusiveZone: Theme.barHeight + (DesktopState.minimalBar ? 6 : 0)
                 BackgroundEffect.blurRegion: Theme.blurEnabled ? barBlurRegion : null
                 Region {
                     id: barBlurRegion
-                    item: DesktopState.minimalBar ? bar.compactItem : bar
+                    x: DesktopState.minimalBar ? Math.round(bar.compactItem.x) : 0
+                    y: Math.round((DesktopState.minimalBar ? bar.compactItem.y : 0) + barWindow.barOffset)
+                    width: DesktopState.minimalBar ? Math.round(bar.compactItem.width) : Math.round(bar.width)
+                    height: DesktopState.minimalBar ? bar.compactItem.height : Math.round(bar.height)
                     radius: DesktopState.minimalBar ? 15 : 0
+                    topLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
+                    topRightCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
+                    bottomLeftCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
+                    bottomRightCorner: DesktopState.minimalBar ? CornerState.Normal : CornerState.Flat
                 }
                 Bar {
                     id: bar; anchors.fill: parent
                     output: desktop.modelData.name; clockText: Qt.formatDateTime(clock.date, "HH:mm")
                     transform: Translate {
-                        y: -(Theme.barHeight + (DesktopState.minimalBar ? 6 : 0) + 2) * (1 - barWindow.reveal)
+                        y: barWindow.barOffset
                     }
                 }
             }
