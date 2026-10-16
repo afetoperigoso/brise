@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Histórico local de clipboard Wayland, texto e imagens; até 80 itens."""
+"""Histórico local de clipboard Wayland, texto e imagens; até 15 itens."""
 import hashlib
 import json
 import os
@@ -16,6 +16,15 @@ dbpath = root/'history.sqlite3'
 db = sqlite3.connect(dbpath)
 os.chmod(dbpath, 0o600)
 db.execute('CREATE TABLE IF NOT EXISTS clips (id TEXT PRIMARY KEY, mime TEXT, body BLOB, title TEXT, updated REAL)')
+MAX_ITEMS = 15
+
+def trim_history():
+    stale = db.execute('SELECT id,mime FROM clips ORDER BY updated DESC LIMIT -1 OFFSET ?', (MAX_ITEMS,)).fetchall()
+    for clipid, oldmime in stale:
+        db.execute('DELETE FROM clips WHERE id=?', (clipid,))
+        if oldmime.startswith('image/'):
+            (root/(clipid+'.'+oldmime.split('/')[1])).unlink(missing_ok=True)
+
 command = sys.argv[1]
 if command == 'capture':
     if os.environ.get('CLIPBOARD_STATE') in ('nil', 'clear', 'sensitive'): sys.exit(0)
@@ -35,11 +44,10 @@ if command == 'capture':
         (root/(digest+'.'+mime.split('/')[1])).write_bytes(body)
     with db:
         db.execute('INSERT OR REPLACE INTO clips VALUES (?, ?, ?, ?, ?)', (digest, mime, body, title[:20000], time.time()))
-        stale = db.execute('SELECT id,mime FROM clips ORDER BY updated DESC LIMIT -1 OFFSET 80').fetchall()
-        for clipid, oldmime in stale:
-            db.execute('DELETE FROM clips WHERE id=?', (clipid,))
-            if oldmime.startswith('image/'): (root/(clipid+'.'+oldmime.split('/')[1])).unlink(missing_ok=True)
+        trim_history()
 elif command == 'list':
+    with db:
+        trim_history()
     rows = db.execute('SELECT id,mime,title FROM clips ORDER BY updated DESC').fetchall()
     print(json.dumps([{'id': i, 'mime': m, 'title': t, 'image': str(root/(i+'.'+m.split('/')[1])) if m.startswith('image/') else ''} for i,m,t in rows], ensure_ascii=False))
 elif command == 'copy':

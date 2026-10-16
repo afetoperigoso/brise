@@ -83,7 +83,7 @@ Replace existing shortcuts using the same keys rather than adding duplicates. Th
 - **Audio:** input and output cards, device selection, and per-app volume and mute controls. A themed on-screen indicator appears when the system default microphone or output is muted or unmuted, including changes made by external shortcuts. The input prefers the Starship/Matisse analog device when available; you can select and save another input.
 - **Bluetooth:** scan for up to 20 seconds, connect, disconnect, unpair paired devices, and pair using a PIN or confirmation. Keep the panel open while pairing.
 - **Wallpapers:** centered panel with thumbnails and automatic refresh. By default, searches `~/Imagens` and conventional wallpaper directories. Change the directory in the palette. The selected image is applied to all monitors.
-- **Clipboard:** text and images copied while Brise is running, with search and keyboard navigation. Use the arrow keys and Enter, or click an item, to copy it. Paste normally with Ctrl+V. Stores up to 80 items, with a 10 MiB limit per item. Does not import history from other shells.
+- **Clipboard:** text and images copied while Brise is running, with search and keyboard navigation. Use the arrow keys and Enter, or click an item, to copy it. Paste normally with Ctrl+V. Stores up to 15 items, with a 10 MiB limit per item. Does not import history from other shells.
 - **Power:** restart, shut down, or suspend. Click an icon once to execute the action.
 - **Panels:** press Esc or click outside to close.
 

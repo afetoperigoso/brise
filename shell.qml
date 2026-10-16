@@ -17,7 +17,7 @@ ShellRoot {
         delegate: Scope {
             id: desktop
             required property var modelData
-            property bool fullscreen: ToplevelManager.toplevels.values.some(t => {
+            property bool fullscreen: !Niri.overviewActive && ToplevelManager.toplevels.values.some(t => {
                 if (!t.fullscreen || !t.screens.some(s => s.name === desktop.modelData.name)) return false;
                 if (t.activated) return true;
                 return Niri.windows.values.some(w => w.appId === t.appId && w.title === t.title
